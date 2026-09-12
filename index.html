@@ -1,0 +1,241 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Leap Engine</title>
+<link rel="stylesheet" href="./styles.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <section id="splash-screen" class="screen">
+    <img class="splash-logo anim-breathe" src="./assets/Splash.png" alt="Leap Engine" />
+    <div class="splash-progress"><div class="splash-progress-bar" id="splash-progress-bar"></div></div>
+    <div class="splash-tag" id="splash-tag">Booting Renderer…</div>
+  </section>
+  <section id="main-menu" class="hidden">
+    <header class="appbar">
+      <div>
+        <div class="title">Leap Engine</div>
+        <div class="subtitle">2D / 3D Game Creation Suite</div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-ghost" id="btn-open-assetbox-menu">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          AssetBox
+        </button>
+      </div>
+    </header>
+    <div class="menu-body">
+      <nav class="menu-nav">
+        <div class="nav-item active" data-view="create">
+          <span class="dot"></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <span class="label">Create Game</span>
+        </div>
+        <div class="nav-item" data-view="projects">
+          <span class="dot"></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 7l3-4h5l2 3"/></svg>
+          <span class="label">My Games</span>
+        </div>
+        <div class="nav-item" data-view="settings">
+          <span class="dot"></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1.04 1.56V21a2 2 0 11-4 0v-.09A1.7 1.7 0 008.66 19.4a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 004.6 15a1.7 1.7 0 00-1.56-1.04H3a2 2 0 110-4h.09A1.7 1.7 0 004.6 8.66a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34H9a1.7 1.7 0 001.04-1.56V3a2 2 0 114 0v.09A1.7 1.7 0 0015.4 4.6a1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0019.4 8.66V9a1.7 1.7 0 001.56 1.04H21a2 2 0 110 4h-.09A1.7 1.7 0 0019.4 15z"/></svg>
+          <span class="label">Settings</span>
+        </div>
+      </nav>
+
+      <div class="menu-content">
+        <div id="view-create" class="view">
+          <div class="section-header">
+            <div>
+              <h2>Create a New Game</h2>
+              <p>Choose a project dimension to begin. Leap supports exactly two game types.</p>
+            </div>
+          </div>
+          <div class="type-grid">
+            <div class="oneui-card tilt type-card type-2d" data-type="2d">
+              <div class="type-glow"></div>
+              <div class="type-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent-2)" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+              </div>
+              <h3>2D Game</h3>
+              <p>Sprite-based scenes powered by PixiJS. Great for platformers, top-down, and puzzle games.</p>
+              <div class="chip chip-2d" style="margin-top:14px;">PixiJS Renderer</div>
+            </div>
+            <div class="oneui-card tilt type-card type-3d" data-type="3d">
+              <div class="type-glow"></div>
+              <div class="type-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>
+              </div>
+              <h3>3D Game</h3>
+              <p>Full scene graph powered by BabylonJS. Great for exploration, arcade, and simulation games.</p>
+              <div class="chip chip-3d" style="margin-top:14px;">BabylonJS Renderer</div>
+            </div>
+          </div>
+        </div>
+        <div id="view-projects" class="view hidden">
+          <div class="section-header">
+            <div>
+              <h2>My Games</h2>
+              <p>Projects saved locally on this device via PouchDB. Nothing leaves your browser.</p>
+            </div>
+          </div>
+          <div class="projects-grid" id="projects-grid"></div>
+        </div>
+        <div id="view-settings" class="view hidden">
+          <div class="section-header">
+            <div>
+              <h2>Settings</h2>
+              <p>Engine preferences, stored locally.</p>
+            </div>
+          </div>
+          <div class="oneui-card" style="max-width:460px;">
+            <div class="prop-row"><label>Grid snapping</label><input type="checkbox" id="setting-snap" checked /></div>
+            <div class="prop-row"><label>Reduce motion</label><input type="checkbox" id="setting-reduce-motion" /></div>
+            <hr class="divider" />
+            <div class="prop-row"><label>Storage used</label><span class="small-label" id="setting-storage">—</span></div>
+            <button class="btn btn-danger" id="btn-clear-storage" style="margin-top:8px;">Clear All Local Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div id="modal-new-project" class="modal-backdrop backdrop-blur hidden">
+    <div class="modal-box oneui-panel anim-pop-in">
+      <h3 id="modal-new-title">Name Your Game</h3>
+      <p id="modal-new-sub">This will create a new project.</p>
+      <input class="input" id="input-project-name" placeholder="Untitled Game" maxlength="40" />
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="btn-cancel-new-project">Cancel</button>
+        <button class="btn btn-accent" id="btn-confirm-new-project">Create</button>
+      </div>
+    </div>
+  </div>
+  <section id="editor-screen" class="hidden">
+    <header class="appbar">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <button class="btn btn-icon btn-ghost" id="btn-back-to-menu" title="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <div>
+          <div class="title" id="editor-project-title">Untitled Game</div>
+          <div class="subtitle" id="editor-project-type">2D Project</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-ghost" id="btn-toggle-assetbox">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          AssetBox
+        </button>
+        <button class="btn btn-ghost" id="btn-save-project">Save</button>
+        <button class="btn btn-accent" id="btn-export-game">Export Game</button>
+      </div>
+    </header>
+
+    <div class="editor-body">
+      <div class="editor-viewport" id="editor-viewport">
+        <canvas id="canvas-2d" class="hidden"></canvas>
+        <canvas id="canvas-3d" class="hidden"></canvas>
+      </div>
+
+      <aside class="editor-sidebar">
+        <div class="side-section">
+          <h4>Tools</h4>
+          <div class="tool-row" id="tool-row-2d">
+            <div class="tool-btn active" data-tool="select">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l7 16 2-7 7-2z"/></svg>
+              Select
+            </div>
+            <div class="tool-btn" data-tool="rect">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+              Rect
+            </div>
+            <div class="tool-btn" data-tool="circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+              Circle
+            </div>
+            <div class="tool-btn" data-tool="sprite">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16l4-6 4 4 3-3 5 5"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+              Sprite
+            </div>
+            <div class="tool-btn" data-tool="delete">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+              Delete
+            </div>
+          </div>
+          <div class="tool-row hidden" id="tool-row-3d">
+            <div class="tool-btn active" data-tool3d="orbit">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="9" ry="3.2"/></svg>
+              Orbit
+            </div>
+            <div class="tool-btn" data-tool3d="box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>
+              Box
+            </div>
+            <div class="tool-btn" data-tool3d="sphere">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
+              Sphere
+            </div>
+            <div class="tool-btn" data-tool3d="ground">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l9-4 9 4-9 4z"/></svg>
+              Ground
+            </div>
+            <div class="tool-btn" data-tool3d="delete">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+              Delete
+            </div>
+          </div>
+        </div>
+
+        <div class="side-section">
+          <h4>Properties</h4>
+          <div id="properties-panel">
+            <div class="empty-state" style="padding:20px 0;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--c-silver-dim)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+              <span style="font-size:12px;">Select an object to edit its properties</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-section" style="flex:1;">
+          <h4>Scene Objects</h4>
+          <div id="layers-list" class="list-scroll" style="max-height:220px;"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+  <div id="assetbox-panel" class="panel-slide-right oneui-panel hidden">
+    <div class="assetbox-header">
+      <div>
+        <div class="title" style="font-size:15px;">AssetBox</div>
+        <div class="subtitle">Pre-made 2D / 3D / Audio assets</div>
+      </div>
+      <button class="btn btn-icon btn-ghost" id="btn-close-assetbox">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="assetbox-tabs" id="assetbox-tabs">
+      <div class="assetbox-tab active" data-cat="2d">2D Sprites</div>
+      <div class="assetbox-tab" data-cat="3d">3D Models</div>
+      <div class="assetbox-tab" data-cat="audio">Audio</div>
+    </div>
+    <div class="assetbox-search">
+      <input class="input" id="assetbox-search-input" placeholder="Search assets…" />
+    </div>
+    <div class="assetbox-grid" id="assetbox-grid"></div>
+  </div>
+  <div id="export-overlay" class="hidden">
+    <div class="made-with-text anim-fade-in" id="export-made-with">Made with</div>
+    <img class="export-logo hidden anim-breathe" id="export-logo" alt="" />
+  </div>
+  <div id="toast-stack"></div>
+</div>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
